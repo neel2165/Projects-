@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spice Garden — Authentic Indian Vegetarian</title>
+
+  <!-- Boxicons for icons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+
+  <style>
+    /* ========== RESET ========== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html,body { height: 100%; }
+
+    /* ========== BACKGROUND ========== */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #4a2f18;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* overlay for legibility */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,249,243,0.82) 0%, rgba(255,249,243,0.88) 60%);
+      z-index: -1;
+    }
+
+    /* ========== LAYOUT ========== */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: rgba(247,230,215,0.9);
+      box-shadow: 0 6px 18px rgba(74,47,24,0.12);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand {
+      display:flex; align-items:center; gap:0.75rem;
+      font-family: 'Georgia', serif; letter-spacing: 2px;
+      color: #b35e1e; font-weight: 900; font-size: 1.5rem;
+      user-select: none;
+    }
+    .brand .leaf { font-size:1.2rem; color:#8bbf5c; }
+    nav.desktop { display:flex; gap:0.75rem; align-items:center; }
+    nav.desktop a {
+      color: #7a5a2a; font-weight:600; padding:0.35rem 0.45rem; text-decoration:none; border-radius:6px;
+      position:relative;
+    }
+    nav.desktop a.active { color:#b35e1e; }
+    nav.desktop a:hover { color:#b35e1e; }
+
+    /* mobile hamburger */
+    .hamburger { display:none; background:transparent; border:none; font-size:1.4rem; color:#7a5a2a; }
+    .mobile-menu { display:none; position:absolute; right:1rem; top:68px; background:#fff8f0; padding:0.75rem; border-radius:10px; box-shadow:0 8px 30px rgba(74,47,24,0.12); }
+    .mobile-menu a { display:block; padding:0.5rem 0.6rem; color:#7a5a2a; text-decoration:none; font-weight:700; }
+
+    main.container { width:100%; max-width:1100px; margin: 1.5rem auto 4rem; padding: 0 1rem; flex:1; }
+
+    /* Section spacing + card look */
+    section.page {
+      display:none;
+      background: rgba(255,248,240,0.95);
+      border-radius: 18px;
+      padding: 2.2rem;
+      box-shadow: 0 12px 30px rgba(179,94,30,0.10);
+      margin-bottom: 1.75rem;
+      transition: transform 300ms ease, opacity 300ms ease;
+    }
+    section.page.show { display:block; }
+
+    /* Hero */
+    #home { text-align:center; padding:3.5rem 1rem; }
+    #home h1 { font-family:'Georgia',serif; font-size:3rem; color:#b35e1e; letter-spacing:6px; margin-bottom:0.5rem; }
+    #home p.lead { color:#7a5a2a; font-size:1.1rem; letter-spacing:2px; }
+
+    /* Grid menu */
+    .menu-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:1.25rem; }
+    .menu-card {
+      background:#fff8f0; padding:1.2rem; border-radius:14px; font-family:'Georgia',serif; color:#6a4a32;
+      box-shadow: 0 8px 20px rgba(179,94,30,0.06); transition: transform 250ms ease;
+    }
+    .menu-card:hover { transform:translateY(-8px); }
+    .menu-card h3 { font-size:1.2rem; color:#b35e1e; margin-bottom:0.6rem; text-align:center; letter-spacing:1.5px; }
+    .dish-list { list-style:none; padding:0; margin:0; }
+    .dish-list li { padding:0.5rem 0; border-bottom:1px solid #efe3d6; display:flex; justify-content:space-between; font-weight:600; }
+
+    /* highlighted recommendations */
+    .special { border: 2px dashed rgba(179,94,30,0.12); padding:1rem; background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,250,245,0.9)); }
+
+    /* Order form */
+    .order-form { max-width:560px; margin:0 auto; }
+    label { display:block; font-weight:700; color:#b35e1e; margin-bottom:0.4rem; font-family:'Georgia',serif; }
+    select, input[type=number], input[type=text], input[type=password] {
+      width:100%; padding:0.85rem 1rem; border-radius:10px; border:2px solid #e6d7c3; margin-bottom:1rem; font-weight:700; color:#5a3e1b;
+      background:#fff;
+    }
+    .btn { display:inline-block; background:#b35e1e; color:#fff; border:none; padding:0.95rem 1.25rem; border-radius:14px; font-weight:900; cursor:pointer; width:100%; }
+    .btn.secondary { background:#8a4513; opacity:0.95; }
+    .tiny { font-size:0.95rem; padding:0.6rem; border-radius:10px; }
+
+    /* auth area */
+    .auth-grid { display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+    .auth-box { background:#fff; padding:1rem; border-radius:12px; width: 320px; box-shadow:0 8px 18px rgba(0,0,0,0.06); }
+    .auth-box h4 { margin-bottom:0.6rem; color:#b35e1e; font-family:'Georgia',serif; letter-spacing:1px; }
+
+    /* profile bar */
+    .profile-bar { display:flex; gap:0.8rem; align-items:center; justify-content:flex-end; }
+    .chip { background:#fff8f0; color:#7a5a2a; padding:0.4rem 0.7rem; border-radius:999px; font-weight:700; box-shadow:0 6px 14px rgba(0,0,0,0.05); }
+
+    /* order history */
+    .history-list { max-height:260px; overflow:auto; padding-right:6px; }
+    .history-item { padding:0.55rem 0; border-bottom:1px solid #efe3d6; display:flex; justify-content:space-between; align-items:center; font-weight:700; }
+
+    /* footer */
+    footer { padding:1.1rem; text-align:center; color:#fff3e6; background:#b35e1e; border-top-left-radius:12px; border-top-right-radius:12px; margin-top:auto; }
+
+    /* active nav highlight */
+    .nav-link { display:inline-flex; gap:0.5rem; align-items:center; padding:0.35rem 0.5rem; border-radius:8px; }
+    .nav-link.active { background:rgba(179,94,30,0.06); color:#b35e1e; }
+
+    /* small screens */
+    @media (max-width:900px) {
+      .hamburger { display:inline-block; }
+      nav.desktop { display:none; }
+      .mobile-menu { display:block; }
+      .auth-grid { flex-direction:column; align-items:center; }
+      .menu-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:520px) {
+      #home h1 { font-size:2.2rem; }
+      .brand { font-size:1.2rem; }
+      .auth-box { width:100%; }
+      .order-form { padding: 0 0.5rem; }
+    }
+
+    /* subtle transitions */
+    .fade { transition: opacity 280ms ease, transform 280ms ease; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand" aria-hidden="true">
+      <i class="bx bx-leaf leaf"></i>
+      SPICE GARDEN
+    </div>
+
+    <!-- desktop nav -->
+    <nav class="desktop" id="desktopNav">
+      <a href="#" class="nav-link" data-target="home"> <i class="bx bx-home"></i> Home</a>
+      <a href="#" class="nav-link" data-target="about"> <i class="bx bx-info-circle"></i> About</a>
+      <a href="#" class="nav-link" data-target="menu"> <i class="bx bx-restaurant"></i> Menu</a>
+      <a href="#" class="nav-link" data-target="order"> <i class="bx bx-cart"></i> Order</a>
+      <a href="#" class="nav-link" id="navAuth" data-target="auth"> <i class="bx bx-user"></i> Login</a>
+    </nav>
+
+    <!-- mobile -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><i class="bx bx-menu"></i></button>
+    <div class="mobile-menu" id="mobileMenu" style="display:none;">
+      <a href="#" class="mobile-link" data-target="home">Home</a>
+      <a href="#" class="mobile-link" data-target="about">About</a>
+      <a href="#" class="mobile-link" data-target="menu">Menu</a>
+      <a href="#" class="mobile-link" data-target="order">Order</a>
+      <a href="#" class="mobile-link" data-target="auth" id="mobileAuthLink">Login</a>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container" role="main">
+
+    <!-- HOME -->
+    <section id="home" class="page show">
+      <div style="max-width:900px;margin:0 auto;">
+        <h1>WELCOME TO SPICE GARDEN</h1>
+        <p class="lead">Authentic Indian Vegetarian Cuisine — fresh, fragrant, and made with love.</p>
+
+        <div style="margin-top:1.5rem; display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+          <button class="btn tiny" onclick="navigateTo('menu')"><i class="bx bx-restaurant"></i> See Menu</button>
+          <button class="btn tiny secondary" onclick="navigateTo('order')"><i class="bx bx-cart"></i> Order Now</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="page">
+      <h2 style="font-family:'Georgia',serif;color:#b35e1e;text-align:center;margin-bottom:1rem;">ABOUT US</h2>
+      <p style="font-size:1.05rem; line-height:1.6; text-align:center; max-width:900px; margin: 0 auto;">
+        At Spice Garden we celebrate India’s vegetarian culinary heritage — rich gravies, smoky tandoor breads, and aromatic biryanis.
+        Seasonal produce, slow-cooked dals, and handmade paneer make every meal special. Dine in or place an order to taste the tradition.
+      </p>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="page">
+      <h2 style="text-align:center;color:#b35e1e;font-family:'Georgia',serif;margin-bottom:1rem;">OUR MENU</h2>
+
+      <div class="menu-grid">
+        <div class="menu-card">
+          <h3>Starters</h3>
+          <ul class="dish-list">
+            <li><span>Paneer Tikka</span><span>₹250</span></li>
+            <li><span>Vegetable Samosa</span><span>₹150</span></li>
+            <li><span>Spring Rolls</span><span>₹180</span></li>
+            <li><span>Hara Bhara Kebab</span><span>₹220</span></li>
+            <li><span>Masala Papad</span><span>₹120</span></li>
+          </ul>
+        </div>
+
+        <div class="menu-card special">
+          <h3>Chef's Recommendations</h3>
+          <ul class="dish-list">
+            <li><span>Paneer Lababdar</span><span>₹360</span></li>
+            <li><span>Kadai Paneer</span><span>₹340</span></li>
+            <li><span>Malai Kofta</span><span>₹370</span></li>
+            <li><span>Special Thali</span><span>₹450</span></li>
+          </ul>
+        </div>
+
+        <div class="menu-card">
+          <h3>Main Courses</h3>
+          <ul class="dish-list">
+            <li><span>Dal Makhani</span><span>₹300</span></li>
+            <li><span>Paneer Butter Masala</span><span>₹350</span></li>
+            <li><span>Baingan Bharta</span><span>₹270</span></li>
+            <li><span>Veg Biryani</span><span>₹320</span></li>
+            <li><span>Palak Paneer</span><span>₹330</span></li>
+          </ul>
+        </div>
+
+        <div class="menu-card">
+          <h3>Breads & Sides</h3>
+          <ul class="dish-list">
+            <li><span>Butter Naan</span><span>₹60</span></li>
+            <li><span>Garlic Naan</span><span>₹70</span></li>
+            <li><span>Missi Roti</span><span>₹80</span></li>
+            <li><span>Laccha Paratha</span><span>₹90</span></li>
+            <li><span>Raita</span><span>₹60</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORDER (SPA page) -->
+    <section id="order" class="page">
+      <div style="display:flex;gap:1.25rem;align-items:flex-start;flex-wrap:wrap;justify-content:space-between;">
+        <div style="flex:1; min-width:300px;">
+          <h2 style="font-family:'Georgia',serif;color:#b35e1e;margin-bottom:0.6rem;">Place Your Order</h2>
+
+          <div class="order-form">
+            <form id="orderForm" class="fade" onsubmit="placeOrder(event)">
+              <label for="orderItem">Select Item</label>
+              <select id="orderItem" required> 
+		  <option>Paneer Tikka</option>
+		  <option>Vegetable Samosa</option>
+		  <option>Spring Rolls</option>
+		  <option>Hara Bhara Kebab</option>
+		  <option>Masala Papad</option>
+		  <option>Paneer Lababdar</option>
+		  <option>Kadai Paneer</option>
+		  <option>Malai Kofta</option>
+		  <option>Special Thali</option>
+		  <option>Dal Makhani</option>
+		  <option>Paneer Butter Masala</option>
+		  <option>Baingan Bharta</option>
+		  <option>Veg Biryani</option>
+		  <option>Palak Paneer</option>
+		  <option>Butter Naan</option>
+		  <option>Garlic Naan</option>
+		  <option>Missi Roti</option>
+		  <option>Laccha Paratha</option>
+		  <option>Raita</option>
+		  <option>Gulab Jamun</option>
+		  <option>Rasgulla</option>
+		  <option>Jalebi</option>
+		  <option>Mango Lassi</option>
+		  <option>Masala Chai</option>
+		  <option>Fresh Lime Soda</option>
+</select>
+
+              </select>
+
+              <label for="qty">Quantity</label>
+              <input id="qty" type="number" min="1" max="20" value="1" required />
+
+              <label for="notes">Special Notes (optional)</label>
+              <input id="notes" type="text" placeholder="Less spice / extra gravy / allergies" />
+
+              <button class="btn" type="submit"><i class="bx bx-cart"></i> Add to Orders</button>
+            </form>
+          </div>
+        </div>
+
+        <aside style="width:360px; min-width:260px;">
+          <div style="background:#fff8f0; padding:1rem; border-radius:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+              <h3 style="color:#b35e1e; font-family:'Georgia',serif; margin:0;">Your Orders</h3>
+              <div class="profile-bar" id="profileBar">
+                <!-- Filled by JS when logged in -->
+              </div>
+            </div>
+
+            <div class="history-list" id="historyList">
+              <!-- Orders inserted here -->
+              <p style="color:#7a5a2a; font-weight:700; margin-top:0.4rem;">Please login to save orders.</p>
+            </div>
+
+            <div style="display:flex; gap:0.6rem; margin-top:0.8rem;">
+              <button class="tiny btn secondary" onclick="downloadUserOrders()">Download</button>
+              <button class="tiny btn" onclick="clearUserOrders()">Clear History</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- AUTH (Login / Register) -->
+    <section id="auth" class="page">
+      <h2 style="font-family:'Georgia',serif;color:#b35e1e;margin-bottom:1rem;text-align:center;">Account</h2>
+
+      <div class="auth-grid" style="justify-content:center;">
+        <div class="auth-box">
+          <h4>Login</h4>
+          <input id="loginUsername" type="text" placeholder="Username" />
+          <input id="loginPassword" type="password" placeholder="Password" />
+          <button class="btn tiny" onclick="doLogin()">Login</button>
+        </div>
+
+        <div class="auth-box">
+          <h4>Register</h4>
+          <input id="regUsername" type="text" placeholder="Choose username" />
+          <input id="regPassword" type="password" placeholder="Choose password" />
+          <button class="btn tiny" onclick="doRegister()">Register</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div style="max-width:1100px; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <div>© <strong>Spice Garden</strong> — 2025. All rights reserved.</div>
+        <div style="font-weight:700">Follow us: <i class="bx bxl-instagram"></i> <i class="bx bxl-facebook"></i></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script>
+    /* ---------- NAV / SPA ---------- */
+    const sections = document.querySelectorAll('section.page');
+    const navLinks = document.querySelectorAll('.nav-link');
+    function showSection(id) {
+      sections.forEach(s => {
+        if (s.id === id) s.classList.add('show');
+        else s.classList.remove('show');
+      });
+      // highlight nav link
+      navLinks.forEach(a => {
+        if (a.dataset.target === id) a.classList.add('active');
+        else a.classList.remove('active');
+      });
+      // close mobile menu if open
+      mobileMenuHide();
+      // update profile area
+      renderProfileBar();
+      // load history for order page
+      if (id === 'order') loadUserOrdersIntoHistory();
+    }
+
+    function navigateTo(target) {
+      // choose between nav id names
+      showSection(target);
+      // scroll to top for better UX
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // wire desktop nav links
+    document.querySelectorAll('.nav-link').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const t = a.dataset.target;
+        showSection(t);
+      });
+    });
+
+    // wire mobile links
+    document.querySelectorAll('.mobile-link').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const t = a.dataset.target;
+        showSection(t);
+      });
+    });
+
+    /* ---------- MOBILE MENU ---------- */
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function mobileMenuToggle() {
+      if (mobileMenu.style.display === 'none' || mobileMenu.style.display === '') {
+        mobileMenu.style.display = 'block';
+      } else {
+        mobileMenu.style.display = 'none';
+      }
+    }
+    function mobileMenuHide() { mobileMenu.style.display = 'none'; }
+    hamburgerBtn.addEventListener('click', mobileMenuToggle);
+    document.addEventListener('click', (e) => {
+      if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenuHide();
+      }
+    });
+
+    /* ---------- AUTH: register / login / session ---------- */
+    function doRegister() {
+      const u = document.getElementById('regUsername').value.trim();
+      const p = document.getElementById('regPassword').value;
+      if (!u || !p) { alert('Please enter username & password.'); return; }
+      if (localStorage.getItem('user_' + u)) {
+        alert('User already exists. Choose another username.');
+        return;
+      }
+      localStorage.setItem('user_' + u, p);
+      // create empty orders for user
+      localStorage.setItem('orders_' + u, JSON.stringify([]));
+      alert('Registered! You can now login.');
+      // clear inputs and switch view to login
+      document.getElementById('regUsername').value = '';
+      document.getElementById('regPassword').value = '';
+      showSection('auth');
+    }
+
+    function doLogin() {
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value;
+      if (!u || !p) { alert('Please enter username & password.'); return; }
+      const stored = localStorage.getItem('user_' + u);
+      if (!stored || stored !== p) {
+        alert('Invalid credentials. Please register or check username/password.');
+        return;
+      }
+      // set session
+      sessionStorage.setItem('spice_user', u);
+      alert('Welcome back, ' + u + '!');
+      // clear fields
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      // go to order page
+      showSection('order');
+    }
+
+    function logout() {
+      sessionStorage.removeItem('spice_user');
+      alert('Logged out.');
+      renderProfileBar();
+      showSection('home');
+    }
+
+    /* ---------- ORDER HANDLING (per-user) ---------- */
+    function currentUser() {
+      return sessionStorage.getItem('spice_user') || null;
+    }
+
+    function placeOrder(event) {
+      event.preventDefault();
+      const user = currentUser();
+      if (!user) { alert('Please login to place orders.'); showSection('auth'); return; }
+      const item = document.getElementById('orderItem').value;
+      const qty = parseInt(document.getElementById('qty').value, 10) || 1;
+      const notes = document.getElementById('notes').value.trim();
+      const ts = new Date().toISOString();
+      const order = { item, qty, notes, ts };
+
+      const key = 'orders_' + user;
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr.push(order);
+      localStorage.setItem(key, JSON.stringify(arr));
+      // update UI
+      loadUserOrdersIntoHistory();
+      // user feedback
+      alert(`Added ${qty} × ${item} to your orders.`);
+      // reset form quantity/notes
+      document.getElementById('qty').value = 1;
+      document.getElementById('notes').value = '';
+    }
+
+    function loadUserOrdersIntoHistory() {
+      const user = currentUser();
+      const list = document.getElementById('historyList');
+      list.innerHTML = '';
+      if (!user) {
+        list.innerHTML = '<p style="color:#7a5a2a;font-weight:700;">Please login to save & view your orders.</p>';
+        renderProfileBar();
+        return;
+      }
+      const key = 'orders_' + user;
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      if (arr.length === 0) {
+        list.innerHTML = '<p style="color:#7a5a2a;font-weight:700;">No orders yet — place your first order!</p>';
+      } else {
+        // build items
+        arr.slice().reverse().forEach((o, idx) => {
+          const el = document.createElement('div');
+          el.className = 'history-item';
+          el.innerHTML = `<div style="font-weight:900">${o.item} <span style="font-weight:600;color:#7a5a2a;">× ${o.qty}</span></div>
+                          <div style="font-size:0.86rem;color:#8a6a4d;">${formatTS(o.ts)}</div>`;
+          list.appendChild(el);
+        });
+      }
+      renderProfileBar();
+    }
+
+    function formatTS(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString();
+      } catch(e) { return iso; }
+    }
+
+    function clearUserOrders() {
+      const user = currentUser();
+      if (!user) { alert('Login first.'); return; }
+      if (!confirm('Clear all orders for ' + user + '?')) return;
+      localStorage.setItem('orders_' + user, JSON.stringify([]));
+      loadUserOrdersIntoHistory();
+    }
+
+    /* ---------- PROFILE BAR UI ---------- */
+    function renderProfileBar() {
+      const bar = document.getElementById('profileBar');
+      bar.innerHTML = '';
+      const user = currentUser();
+      if (user) {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.textContent = user;
+        bar.appendChild(chip);
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.className = 'tiny btn';
+        logoutBtn.style.width = 'auto';
+        logoutBtn.style.padding = '0.45rem 0.7rem';
+        logoutBtn.style.marginLeft = '6px';
+        logoutBtn.innerHTML = '<i class="bx bx-log-out"></i>';
+        logoutBtn.title = 'Logout';
+        logoutBtn.onclick = () => { logout(); };
+        bar.appendChild(logoutBtn);
+      } else {
+        const loginBtn = document.createElement('button');
+        loginBtn.className = 'tiny btn';
+        loginBtn.style.width = 'auto';
+        loginBtn.style.padding = '0.45rem 0.7rem';
+        loginBtn.innerHTML = '<i class="bx bx-user"></i> Login';
+        loginBtn.onclick = () => showSection('auth');
+        bar.appendChild(loginBtn);
+      }
+
+      // update header auth label
+      const navAuth = document.getElementById('navAuth');
+      const mobileAuth = document.getElementById('mobileAuthLink');
+      if (user) {
+        navAuth.innerHTML = '<i class="bx bx-user"></i> ' + user;
+        navAuth.dataset.target = 'order';
+        mobileAuth.textContent = user;
+      } else {
+        navAuth.innerHTML = '<i class="bx bx-user"></i> Login';
+        navAuth.dataset.target = 'auth';
+        mobileAuth.textContent = 'Login';
+      }
+    }
+
+    /* ---------- DOWNLOAD ORDERS (optional) ---------- */
+    function downloadUserOrders() {
+      const user = currentUser();
+      if (!user) { alert('Please login to download your orders.'); return; }
+      const arr = JSON.parse(localStorage.getItem('orders_' + user) || '[]');
+      if (arr.length === 0) { alert('No orders to download.'); return; }
+      let text = `Orders for ${user}\n\n`;
+      arr.forEach((o, i) => {
+        text += `${i+1}. ${o.item} x ${o.qty}\n   Notes: ${o.notes || '-'}\n   Time: ${formatTS(o.ts)}\n\n`;
+      });
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders_${user}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    /* ---------- INITIALIZE UI ---------- */
+    // Show home by default
+    showSection('home');
+    // Render profile area based on session
+    renderProfileBar();
+    // If user logged in, show their orders on order page
+    if (currentUser()) loadUserOrdersIntoHistory();
+
+    // Allow pressing Enter to login/register in auth forms
+    document.getElementById('regPassword').addEventListener('keydown', e => { if (e.key==='Enter') doRegister(); });
+    document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+    // Optional: keep nav active when using browser back/forward (simple)
+    window.addEventListener('popstate', () => { showSection('home'); });
+
+  </script>
+</body>
+</html>ō
