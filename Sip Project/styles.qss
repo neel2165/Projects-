@@ -1,0 +1,49 @@
+/* Global Styles */
+QWidget {
+    background-color: #0b0b14;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #111;
+    color: white;
+    border: 2px solid purple;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+QPushButton:hover {
+    background-color: purple;
+    box-shadow: 0px 0px 10px pink;
+}
+
+QPushButton:pressed {
+    background-color: pink;
+    box-shadow: 0px 0px 15px pink;
+}
+
+/* Labels */
+QLabel {
+    font-size: 18px;
+}
+
+/* Input Fields */
+QLineEdit {
+    background-color: #222;
+    border: 1px solid purple;
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+/* Table */
+QTableWidget {
+    background-color: #222;
+    color: white;
+    border: 1px solid purple;
+}
